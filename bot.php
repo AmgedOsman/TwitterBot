@@ -63,15 +63,14 @@ class TwitterAutoResponder {
 		try {
 			echo '@'.$tweet->from_user.' said: '.$tweet->text."\n";
 			$this->_connection->post('status/update', array(
-													'status' => '@'.$tweet->from_user.' '.$reply,
-													'in_reply_to_status_id' => $tweet->id_str
-												);
-
-			}
-			catch (OAuthException $e) {
+				'status' => '@'.$tweet->from_user.' '.$reply,
+				'in_reply_to_status_id' => $tweet->id_str
+			);
+		}
+		catch (OAuthException $e) {
 				echo 'ERROR: '.$e->message;
 				die();
-			}
+		}
 	}
 
 	private function verify() {
