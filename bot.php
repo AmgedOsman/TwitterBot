@@ -41,16 +41,17 @@ class TwitterAutoResponder {
 		// Loop through the replies
 		foreach ($this->_replies as $term => $reply) {
 			echo 'Performing search for '.$term.'... ';
-			$search = $this->search($term, $since_id);
-			echo 'Done, '.count($search->results).' results.';
+			//$search = $this->search($term, $since_id);
+			$search = $this->_connection->get('search/tweets', array('q' => $term, 'since_id' => $since_id /*'count' => 15*/));
+			echo 'Done, '.count($search->statuses).' results.';
 
 			// Store the max ID
-			if ($search->max_id_str > $max_id) {
-				$max_id = $search->max_id_str;
+			if ($search->search_metadata->max_id_str > $max_id) {
+				$max_id = $search->search_metadata->max_id_str;
 			}
 
 			// Loop through the results
-			foreach ($search->results as $tweet) {
+			foreach ($search->statuses as $tweet) {
 				$this->reply($tweet, $reply);
 			}
 		}
@@ -61,7 +62,7 @@ class TwitterAutoResponder {
 	private function reply($tweet, $reply) {
 
 		try {
-			echo '@'.$tweet->from_user.' said: '.$tweet->text."\n";
+			echo '@'.$tweet->user->screen_name.' said: '.$tweet->text."\n";
 			$this->_connection->post('status/update', array(
 				'status' => '@'.$tweet->from_user.' '.$reply,
 				'in_reply_to_status_id' => $tweet->id_str
